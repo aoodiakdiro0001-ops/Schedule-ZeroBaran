@@ -1,0 +1,43 @@
+# ============================================================
+# Schedule-ZeroBaran — تنظيف يومي للمواعيد المنتهية
+# المؤلف: Baran Avisat (Baranavisat@gmail.com)
+# ============================================================
+# يعمل يومياً منتصف الليل لتنظيف المواعيد المنتهية.
+# ============================================================
+name: Schedule-ZeroBaran — Daily Cleanup
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: تنظيف المواعيد المنتهية
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      TIMEZONE: ${{ secrets.TIMEZONE }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: تثبيت الحد الأدنى من المتطلبات
+        run: |
+          python -m pip install --upgrade pip
+          pip install supabase pydantic-settings python-dateutil pytz
+
+      - name: تشغيل التنظيف
+        run: python scripts/cleanup_appointments.py

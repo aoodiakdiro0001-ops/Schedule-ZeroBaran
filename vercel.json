@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "name": "schedule-zerobaran",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "api/index.py" }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.11"
+  },
+  "crons": [
+    {
+      "path": "/api/reminders/run",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cleanup",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

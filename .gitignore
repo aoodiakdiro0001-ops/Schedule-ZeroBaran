@@ -1,0 +1,37 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+.env
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Build / Dist =====
+build/
+dist/
+*.egg
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Project Specific =====
+*.db
+*.sqlite3
+node_modules/
+.vercel/
