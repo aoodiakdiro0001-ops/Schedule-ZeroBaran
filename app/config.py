@@ -8,12 +8,24 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """الإعدادات المركزية للمنظومة."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _blank_env_is_unset(cls, data):
+        # GitHub Actions exports every unset secret as an EMPTY string ("").
+        # pydantic-settings prefers the env value over the Field default, so
+        # AI_PROVIDER="" / SESSION_DURATION_MINUTES="" raise ValidationError and
+        # the whole cron job dies before doing any work. Drop blank values from
+        # the incoming mapping so the declared defaults apply instead.
+        if isinstance(data, dict):
+            return {k: v for k, v in data.items() if not (isinstance(v, str) and not v.strip())}
+        return data
 
     model_config = SettingsConfigDict(
         env_file=".env",
