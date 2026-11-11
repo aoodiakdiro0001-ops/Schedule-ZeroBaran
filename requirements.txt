@@ -18,7 +18,9 @@ psycopg2-binary==2.9.10
 # --- الذكاء الاصطناعي (AI Scheduler Brain) ---
 google-generativeai==0.8.4
 groq==0.18.0
-httpx==0.28.1
+# httpx must stay <0.28: supabase==2.10.0 pins httpx>=0.26,<0.28,
+# so 0.28.1 makes pip ResolutionImpossible and the whole install aborts.
+httpx==0.27.2
 
 # --- بوت تليجرام (Telegram Bot API) ---
 python-telegram-bot==21.10
