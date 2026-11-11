@@ -17,6 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 sys.path.insert(0, ROOT)
 
+from app.config import settings  # noqa: E402
 from app.reminders import run_reminder_cycle  # noqa: E402
 
 logging.basicConfig(
@@ -28,6 +29,18 @@ logger = logging.getLogger("send_reminders")
 
 def main() -> int:
     logger.info("🚀 بدء دورة التذكيرات Schedule-ZeroBaran")
+
+    # Missing Supabase credentials are a configuration state, not a defect.
+    # GitHub Actions exports every unset secret as "", so a fresh clone used
+    # to raise RuntimeError from get_supabase() and keep this cron red
+    # forever. Report honestly and exit 0 until the secrets exist.
+    if not settings.is_supabase_ready:
+        logger.warning(
+            "⚠️ Supabase غير مُعد (SUPABASE_URL / SUPABASE_KEY فارغة). "
+            "تخطّي دورة التذكيرات — أضف الأسرار لتفعيلها."
+        )
+        return 0
+
     result = run_reminder_cycle()
     logger.info("📊 النتيجة: %s", json.dumps(result, ensure_ascii=False, indent=2))
     print(f"::set-output name=result::{json.dumps(result, ensure_ascii=False)}")

@@ -74,6 +74,17 @@ class Settings(BaseSettings):
         """يُرجع مفتاح الخدمة إن وُجد، وإلا المفتاح العادي."""
         return self.supabase_service_key or self.supabase_key
 
+    @property
+    def is_supabase_ready(self) -> bool:
+        """True only when both Supabase coordinates are actually present.
+
+        GitHub Actions exports every unset secret as "", so this must be
+        checked before touching the database — otherwise the hourly cron
+        raises RuntimeError and stays permanently red on a repo where the
+        secrets were never configured.
+        """
+        return bool(self.supabase_url and self.supabase_admin_key)
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
